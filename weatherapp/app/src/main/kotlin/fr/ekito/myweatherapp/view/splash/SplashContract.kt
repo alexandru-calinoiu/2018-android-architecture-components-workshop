@@ -1,18 +1,15 @@
 package fr.ekito.myweatherapp.view.splash
 
-import fr.ekito.myweatherapp.util.mvp.BasePresenter
-import fr.ekito.myweatherapp.util.mvp.BaseView
+import android.arch.lifecycle.LiveData
+import fr.ekito.myweatherapp.view.ViewModelEvent
 
 /**
- * Weather MVP Contract
+ * Weather MVVM Contract
  */
 interface SplashContract {
-    interface View : BaseView<Presenter> {
-        fun showIsLoaded()
-        fun showIsLoading()
-    }
+    interface ViewModel {
+        val events: LiveData<ViewModelEvent>
 
-    interface Presenter : BasePresenter<View> {
         fun getLastWeather()
     }
 }
