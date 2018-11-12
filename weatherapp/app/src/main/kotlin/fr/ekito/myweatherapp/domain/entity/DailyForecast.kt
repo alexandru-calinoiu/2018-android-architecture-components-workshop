@@ -1,22 +1,23 @@
 package fr.ekito.myweatherapp.domain.entity
 
 import fr.ekito.myweatherapp.data.json.Forecastday_
+import fr.ekito.myweatherapp.data.room.WeatherEntity
 import java.util.*
 
 /**
  * Represents our weather forecast for one day
  */
 data class DailyForecast(
-    val location: String,
-    val day: String,
-    val shortText: String,
-    val fullText: String,
-    val iconUrl: String,
-    val icon: String,
-    val temperature: Temperature,
-    val wind: Wind,
-    val humidity: Humidity,
-    val id: String = UUID.randomUUID().toString()
+        val location: String,
+        val day: String,
+        val shortText: String,
+        val fullText: String,
+        val iconUrl: String,
+        val icon: String,
+        val temperature: Temperature,
+        val wind: Wind,
+        val humidity: Humidity,
+        val id: String = UUID.randomUUID().toString()
 ) {
     val colorCode: Int by lazy { colorCodeFromTemperatureRange(temperature.high.toInt()) }
 
@@ -32,20 +33,33 @@ data class DailyForecast(
 
     companion object {
         fun from(location: String, f: Forecastday_) =
-            DailyForecast(
-                location,
-                f.date?.weekday ?: "",
-                f.conditions ?: "",
-                "",
-                f.iconUrl ?: "",
-                getWeatherCodeForIcon(f.icon ?: ""),
-                Temperature(
-                    f.low?.celsius ?: "",
-                    f.high!!.celsius!!
-                ),
-                Wind(f.avewind?.kph ?: 0, f.avewind?.dir ?: ""),
-                Humidity(f.avehumidity ?: 0)
-            )
+                DailyForecast(
+                        location,
+                        f.date?.weekday ?: "",
+                        f.conditions ?: "",
+                        "",
+                        f.iconUrl ?: "",
+                        getWeatherCodeForIcon(f.icon ?: ""),
+                        Temperature(
+                                f.low?.celsius ?: "",
+                                f.high!!.celsius!!
+                        ),
+                        Wind(f.avewind?.kph ?: 0, f.avewind?.dir ?: ""),
+                        Humidity(f.avehumidity ?: 0)
+                )
+
+        fun from(entity: WeatherEntity) = DailyForecast(
+                entity.location,
+                entity.day,
+                entity.shortText,
+                entity.fullText,
+                entity.iconUrl,
+                entity.icon,
+                Temperature(entity.temp_low, entity.temp_high),
+                Wind(entity.wind_kph, entity.wind_dir),
+                Humidity(entity.humidity),
+                entity.id
+        )
     }
 }
 

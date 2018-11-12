@@ -4,6 +4,7 @@ import android.app.Application
 import com.joanzapata.iconify.Iconify
 import com.joanzapata.iconify.fonts.WeathericonsModule
 import fr.ekito.myweatherapp.di.offlineWeatherApp
+import fr.ekito.myweatherapp.di.roomWeatherApp
 import org.koin.android.ext.android.startKoin
 
 /**
@@ -15,7 +16,7 @@ class MainApplication : Application() {
         super.onCreate()
 
         // start Koin context
-        startKoin(this, offlineWeatherApp)
+        startKoin(this, roomWeatherApp)
 
         Iconify
             .with(WeathericonsModule())
