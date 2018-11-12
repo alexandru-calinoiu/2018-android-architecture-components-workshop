@@ -26,7 +26,7 @@ interface DailyForecastRepository {
  * Weather repository
  * Make use of WeatherDataSource & add some cache
  */
-class DailyForecastRepositoryImpl(private val weatherDatasource: WeatherDataSource) :
+class DailyForecastRepositoryImpl(private val weatherDataSource: WeatherDataSource) :
     DailyForecastRepository {
 
     private fun lastLocationFromCache() = weatherCache.firstOrNull()?.location
@@ -44,9 +44,9 @@ class DailyForecastRepositoryImpl(private val weatherDatasource: WeatherDataSour
         else {
             val targetLocation: String = location ?: lastLocationFromCache() ?: DEFAULT_LOCATION
             weatherCache.clear()
-            weatherDatasource.geocode(targetLocation)
+            weatherDataSource.geocode(targetLocation)
                 .map { it.getLocation() ?: throw IllegalStateException("No Location data") }
-                .flatMap { weatherDatasource.weather(it.lat, it.lng, DEFAULT_LANG) }
+                .flatMap { weatherDataSource.weather(it.lat, it.lng, DEFAULT_LANG) }
                 .map { it.getDailyForecasts(targetLocation) }
                 .doOnSuccess { weatherCache.addAll(it) }
         }
