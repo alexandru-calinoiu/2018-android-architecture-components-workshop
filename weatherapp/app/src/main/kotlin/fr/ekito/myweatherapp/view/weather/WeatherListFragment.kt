@@ -1,5 +1,6 @@
 package fr.ekito.myweatherapp.view.weather
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -12,11 +13,11 @@ import fr.ekito.myweatherapp.view.weather.list.WeatherItem
 import fr.ekito.myweatherapp.view.weather.list.WeatherListAdapter
 import kotlinx.android.synthetic.main.fragment_result_list.*
 import org.jetbrains.anko.startActivity
-import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.sharedViewModel
 
-class WeatherListFragment : Fragment(), WeatherListContract.View {
+class WeatherListFragment : Fragment() {
 
-    override val presenter by inject<WeatherListContract.Presenter>()
+    private val viewModel: WeatherContract.ViewModel by sharedViewModel<WeatherViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +29,9 @@ class WeatherListFragment : Fragment(), WeatherListContract.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         prepareListView()
+        listenToStates()
     }
 
     private fun prepareListView() {
@@ -47,24 +50,17 @@ class WeatherListFragment : Fragment(), WeatherListContract.View {
         )
     }
 
-    override fun showWeatherItemList(newList: List<WeatherItem>) {
+    private fun listenToStates() {
+        this.viewModel.states.observe(this, Observer {
+            when (it) {
+                is WeatherViewModel.WeatherListLoaded -> showWeatherItemList(it.list.map { forecast -> WeatherItem.from(forecast) })
+            }
+        })
+    }
+
+    private fun showWeatherItemList(newList: List<WeatherItem>) {
         val adapter: WeatherListAdapter = weatherList.adapter as WeatherListAdapter
         adapter.list = newList
         adapter.notifyDataSetChanged()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        presenter.subscribe(this)
-        presenter.getWeatherList()
-    }
-
-    override fun onPause() {
-        presenter.unSubscribe()
-        super.onPause()
-    }
-
-    override fun showError(error: Throwable) {
-        (activity as? WeatherActivity)?.showError(error)
     }
 }
