@@ -11,23 +11,20 @@ import fr.ekito.myweatherapp.view.Failed
 import fr.ekito.myweatherapp.view.Loading
 import fr.ekito.myweatherapp.view.ViewModelState
 
-class DetailViewModel : RxViewModel() {
-    private lateinit var dailyForecastRepository: DailyForecastRepository
-    private lateinit var schedulerProvider: SchedulerProvider
+class DetailViewModel : RxViewModel(), DetailContract.ViewModel {
+    lateinit var dailyForecastRepository: DailyForecastRepository
+    lateinit var schedulerProvider: SchedulerProvider
 
     data class DetailLoaded(val weather: DailyForecast) : ViewModelState()
 
-    private val _states = MutableLiveData<ViewModelState>()
+    override val states = MutableLiveData<ViewModelState>()
 
-    public val states: LiveData<ViewModelState>
-        get() = _states
-
-    fun getDetail(id: String) {
-        _states.value = Loading
+    override fun getDetail(id: String) {
+        states.value = Loading
         launch {
             dailyForecastRepository.getWeatherDetail(id).with(schedulerProvider).subscribe(
-                    { _states.value = DetailLoaded(it) },
-                    { _states.value = Failed(it) })
+                    { states.value = DetailLoaded(it) },
+                    { states.value = Failed(it) })
         }
     }
 }

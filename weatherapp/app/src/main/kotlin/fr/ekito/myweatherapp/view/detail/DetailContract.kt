@@ -1,15 +1,12 @@
 package fr.ekito.myweatherapp.view.detail
 
-import fr.ekito.myweatherapp.domain.entity.DailyForecast
-import fr.ekito.myweatherapp.util.mvp.BasePresenter
-import fr.ekito.myweatherapp.util.mvp.BaseView
+import android.arch.lifecycle.LiveData
+import fr.ekito.myweatherapp.view.ViewModelState
 
 interface DetailContract {
-    interface View : BaseView<Presenter> {
-        fun showDetail(weather: DailyForecast)
-    }
+    interface ViewModel {
+        val states: LiveData<ViewModelState>
 
-    interface Presenter : BasePresenter<View> {
         fun getDetail(id: String)
     }
 }
